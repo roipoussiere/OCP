@@ -33,4 +33,4 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         curl -L -o miniforge.exe https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe
-        start /wait "miniforge.exe" /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /S /D=%USERPROFILE%\Miniforge3
+        start miniforge.exe /wait /InstallationType=JustMe /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /S /D=%USERPROFILE%\Miniforge3
