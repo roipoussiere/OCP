@@ -29,9 +29,8 @@ jobs:
         run: |
           which python
           which pip
-          conda activate cadquery
-          which python
-          which pip
+          $CONDA/bin/python --version
+          $CONDA/bin/python -m pip --version
           conda info
           conda list
       # - name: Python build
