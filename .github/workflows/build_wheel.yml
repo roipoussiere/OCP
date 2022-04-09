@@ -11,7 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ "ubuntu", "macos" ]
+        # os: [ "ubuntu", "macos", "windows" ]
+        os: [ "ubuntu" ]
         python-version: [ "3.9" ]
 
     steps:
@@ -24,8 +25,10 @@ jobs:
         with:
           miniforge-version: latest
           python-version: ${{ matrix.python-version }}
+          environment-file: env.yml
           channels: conda-forge
           activate-environment: cadquery
+          auto-activate-base: false
 
       - name: Info
         run: |
