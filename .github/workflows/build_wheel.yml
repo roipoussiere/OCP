@@ -27,19 +27,19 @@ jobs:
           activate-environment: cadquery
 
       - name: Info
-        shell: bash -l {0}
         run: |
-          which python
           conda info
           conda list
 
-      - name: Python build on Linux and Mac
+      - name: Install cibuildwheel
+        shell: bash -l {0}
+        run: python -m pip install cibuildwheel==2.4.0
+
+      - name: Build wheels
         shell: bash -l {0}
         run: |
           conda install -y ocp=7.5.3.0
-          $CONDA/bin/pip install --upgrade pip
-          $CONDA/bin/pip install auditwheel build
-          $CONDA/bin/python -m build --no-isolation
+          python -m cibuildwheel --output-dir dir
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
