@@ -17,11 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
-          with:
-            miniforge-version: latest
-            activate-environment: cadquery
-            python-version: ${{ matrix.python-version }}
-            channels: conda-forge
+        with:
+          miniforge-version: latest
+          activate-environment: cadquery
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge
       - name: Conda info
         run: conda info
       - name: Conda list
