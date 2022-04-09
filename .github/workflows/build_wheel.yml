@@ -24,7 +24,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
           auto-activate-base: true
-          activate-environment: ''
+          activate-environment: true
 
       - name: Info
         run: |
