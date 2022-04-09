@@ -24,15 +24,9 @@ jobs:
           miniforge-version: latest
           activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
-          environment-file: env.yml
+          # environment-file: env.yml
           channels: conda-forge
           auto-activate-base: false
-
-      - name: Prepare
-        run: |
-          conda init bash
-          conda activate cadquery
-          which python
 
       - name: Info
         run: |
