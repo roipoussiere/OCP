@@ -6,31 +6,23 @@ on:
 
 jobs:
   build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
 
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ "ubuntu", "macos", "windows" ]
+        python-version: [ "3.9" ]
 
-    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
-      with:
-        python-version: 3.9
-
-    # Download and run Miniforge
-    - name: Download Miniforge3 on Linux
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        wget -O miniforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-        bash miniforge.sh -b -p $HOME/miniforge
-    - name: Download Miniforge3 on MacOS
-      if: matrix.os == 'macos-latest'
-      run: |
-        wget -O miniforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-$(uname -m).sh"
-        bash miniforge.sh -b -p $HOME/miniforge
-    - name: Download Miniforge3 on Windows
-      if: matrix.os == 'windows-latest'
-      run: |
-        curl -L -o miniforge.exe https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe
-        start -wait "miniforge.exe"
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+          with:
+            miniforge-version: latest
+            activate-environment: cadquery
+            python-version: ${{ matrix.python-version }}
+            channels: conda-forge
+      - name: Conda info
+        run: conda info
+      - name: Conda list
+        run: conda list
