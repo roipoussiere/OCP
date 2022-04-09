@@ -19,18 +19,20 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
-          activate-environment: cadquery
+          # activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
-          channels: conda-forge
-      - name: Conda info
-        run: conda info
-      - name: Conda list
-        run: conda list
+          # channels: conda-forge
+          environment-file: env.yml
       - name: Conda install
-        run: |
-          ls
-          conda install -y ocp=7.5.3.0
+        run: conda install -y ocp=7.5.3.0
       - name: Pip install
         run: |
           pip install --upgrade pip
           pip install auditwheel build
+      - name: Python build
+        run: python -m build --no-isolation
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ocpvtk-wheel
+          path: dist
