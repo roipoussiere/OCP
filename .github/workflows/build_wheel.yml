@@ -26,7 +26,7 @@ jobs:
           channels: conda-forge
       - name: Python build
         run: |
-          install -y ocp=7.5.3.0
+          conda install -y ocp=7.5.3.0
           pip install --upgrade pip
           pip install auditwheel build
           python -m build --no-isolation
