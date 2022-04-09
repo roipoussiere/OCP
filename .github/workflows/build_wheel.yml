@@ -21,7 +21,6 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
-          activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
           auto-activate-base: true
@@ -34,8 +33,9 @@ jobs:
           conda list
 
       # - name: Python build Python
-      #   if: steps.main.outputs.OUTPUT == 0
+      #   if: matrix.os == 'windows'
       #   shell: bash -l {0}
+      #   shell: pwsh
       #   run: |
       #     conda install -y ocp=7.5.3.0
       #     $CONDA/bin/pip install --upgrade pip
