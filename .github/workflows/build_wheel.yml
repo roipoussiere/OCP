@@ -11,7 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ "ubuntu", "macos", "windows" ]
+        # os: [ "ubuntu", "macos", "windows" ]
+        os: [ "ubuntu" ]
         python-version: [ "3.9" ]
 
     steps:
@@ -30,7 +31,9 @@ jobs:
           pip install --upgrade pip
           pip install auditwheel build
       - name: Python build
-        run: python -m build --no-isolation
+        run: |
+          conda activate
+          python -m build --no-isolation
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
