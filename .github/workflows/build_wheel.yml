@@ -22,31 +22,28 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
-          activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
-          # environment-file: env.yml
           channels: conda-forge
-          auto-activate-base: false
+          auto-activate-base: true
+          auto-update-conda: true
+          activate-environment: true
 
       - name: Info
         run: |
           which python
-          conda info
-          conda list
+        # conda info
+        # conda list
 
       # - name: Install cibuildwheel
       #   run: $CONDA/bin/python -m pip install cibuildwheel==2.4.0
 
-      - name: Build wheels
-        run: |
-          conda install -y ocp=7.5.3.0
-          pip install --upgrade pip
-          pip install auditwheel build
-          python -m build --no-isolation
-        # python -m cibuildwheel --output-dir wheelhouse
+      # - name: Build wheels
+      #   run: |
+      #     conda install -y ocp=7.5.3.0
+      #     python -m cibuildwheel --output-dir dist
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ocpvtk-wheel
-          path: dist
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ocpvtk-wheel
+      #     path: dist
