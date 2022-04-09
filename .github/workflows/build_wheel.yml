@@ -28,8 +28,15 @@ jobs:
           channels: conda-forge
           auto-activate-base: false
 
+      - name: Prepare
+        run: |
+          conda init bash
+          conda activate cadquery
+          which python
+
       - name: Info
         run: |
+          which python
           conda info
           conda list
 
@@ -38,12 +45,11 @@ jobs:
 
       - name: Build wheels
         run: |
-          conda activate cadquery
           conda install -y ocp=7.5.3.0
-          $CONDA/bin/pip install --upgrade pip
-          $CONDA/bin/pip install auditwheel build
-          $CONDA/bin/python -m build --no-isolation
-        # $CONDA/bin/python -m cibuildwheel --output-dir wheelhouse
+          pip install --upgrade pip
+          pip install auditwheel build
+          python -m build --no-isolation
+        # python -m cibuildwheel --output-dir wheelhouse
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
