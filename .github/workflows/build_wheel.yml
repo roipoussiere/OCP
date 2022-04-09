@@ -24,11 +24,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: env.yml
           channels: conda-forge
+          auto-activate-base: false
       - name: Test
         run: |
           which python
           which pip
-          python --version
+          conda activate cadquery
+          which python
+          which pip
           conda info
           conda list
       # - name: Python build
