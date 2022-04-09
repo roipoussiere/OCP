@@ -32,6 +32,8 @@ jobs:
       - name: Python build
         run: |
           conda install -y ocp=7.5.3.0
+          $CONDA/bin/pip install --upgrade pip
+          $CONDA/bin/pip install auditwheel build
           $CONDA/bin/python -m build --no-isolation
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
