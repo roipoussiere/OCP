@@ -23,8 +23,7 @@ jobs:
           miniforge-version: latest
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
-          auto-activate-base: true
-          activate-environment: true
+          activate-environment: cadquery
 
       - name: Info
         run: |
@@ -32,18 +31,26 @@ jobs:
           conda info
           conda list
 
-      # - name: Python build Python
-      #   if: matrix.os == 'windows'
-      #   shell: bash -l {0}
-      #   shell: pwsh
-      #   run: |
-      #     conda install -y ocp=7.5.3.0
-      #     $CONDA/bin/pip install --upgrade pip
-      #     $CONDA/bin/pip install auditwheel build
-      #     $CONDA/bin/python -m build --no-isolation
+      - name: Python build on Linux and Mac
+        if: matrix.os != 'windows'
+        shell: bash -l {0}
+        run: |
+          conda install -y ocp=7.5.3.0
+          $CONDA/bin/pip install --upgrade pip
+          $CONDA/bin/pip install auditwheel build
+          $CONDA/bin/python -m build --no-isolation
 
-      # - name: Upload Artifact
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: ocpvtk-wheel
-      #     path: dist
+      - name: Python build on Windows
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          conda install -y ocp=7.5.3.0
+          $CONDA/bin/pip install --upgrade pip
+          $CONDA/bin/pip install auditwheel build
+          $CONDA/bin/python -m build --no-isolation
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ocpvtk-wheel
+          path: dist
