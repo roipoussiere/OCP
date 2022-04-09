@@ -16,7 +16,9 @@ jobs:
         python-version: [ "3.9" ]
 
     steps:
+
       - uses: actions/checkout@v2
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
@@ -25,16 +27,21 @@ jobs:
           environment-file: env.yml
           channels: conda-forge
           auto-activate-base: false
-      - name: Info
+
+      - name: Conda info
         run: |
           conda info
           conda list
-      - name: Python build
-        run: |
-          conda install -y ocp=7.5.3.0
-          $CONDA/bin/pip install --upgrade pip
-          $CONDA/bin/pip install auditwheel build
-          $CONDA/bin/python -m build --no-isolation
+
+      - name: Install OCP
+        run: conda install -y ocp=7.5.3.0
+
+      - name: Install cibuildwheel
+        run: $CONDA/bin/pip install cibuildwheel==2.4.0
+
+      - name: Build wheels
+        run: $CONDA/bin/python -m cibuildwheel --output-dir dist
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
