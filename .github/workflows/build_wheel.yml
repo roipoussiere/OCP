@@ -44,7 +44,7 @@ jobs:
       - name: Build wheels
         shell: bash -l {0}
         run: |
-          conda install -n cadquery -y ocp=7.5.3.0
+          $CONDA/bin/conda install -y ocp=7.5.3.0
           pip install --upgrade pip
           pip install auditwheel build
           python -m build --no-isolation
