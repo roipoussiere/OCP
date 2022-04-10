@@ -12,12 +12,12 @@ jobs:
     strategy:
       matrix:
         # os: [ "ubuntu", "macos", "windows" ]
-        os: [ "ubuntu", "macos" ]
+        os: [ "ubuntu" ]
         python-version: [ "3.9" ]
 
     steps:
 
-      - name: Checkout project (get setup.py)
+      - name: Checkout project
         uses: actions/checkout@v2
 
       # see https://github.com/marketplace/actions/setup-miniconda
@@ -25,15 +25,14 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
+          activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
           environment-file: env.yml
           channels: conda-forge
-          activate-environment: cadquery
+          auto-activate-base: false
 
       - name: Print info
-        shell: bash -l {0}
         run: |
-          which python
           conda info
           conda list
 
@@ -43,12 +42,11 @@ jobs:
       #   run: python -m pip install cibuildwheel==2.4.0
 
       - name: Build wheels
-        shell: bash -l {0}
         run: |
           conda install -y ocp=7.5.3.0
-          python -m pip install --upgrade pip
-          python -m pip install auditwheel build
-          python -m build --no-isolation
+          $CONDA/bin/pip install --upgrade pip
+          $CONDA/bin/pip install auditwheel build
+          $CONDA/bin/python -m build --no-isolation
         # python -m cibuildwheel --output-dir dir
 
       - name: Upload Artifact
