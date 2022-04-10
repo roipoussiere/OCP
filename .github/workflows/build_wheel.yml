@@ -27,7 +27,7 @@ jobs:
           miniforge-version: latest
           activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
-          environment-file: env.yml
+          # environment-file: env.yml
           channels: conda-forge
 
       - name: Print info
