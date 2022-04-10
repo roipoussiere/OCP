@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # os: [ "ubuntu", "macos", "windows" ]
-        os: [ "ubuntu", "macos" ]
+        os: [ "ubuntu" ]
         python-version: [ "3.9" ]
 
     steps:
@@ -33,6 +33,10 @@ jobs:
 
       - name: Print info
         run: |
+          which python
+          which conda
+          which pip
+          echo $CONDA
           conda info
           conda list
 
@@ -41,20 +45,20 @@ jobs:
       #   shell: bash -l {0}
       #   run: python -m pip install cibuildwheel==2.4.0
 
-      - name: Build wheels
-        shell: bash -l {0}
-        run: |
-          conda install -y ocp=7.5.3.0
-          pip install --upgrade pip
-          pip install auditwheel build
-          python -m build --no-isolation
-        # python -m cibuildwheel --output-dir dir
+      # - name: Build wheels
+      #   shell: bash -l {0}
+      #   run: |
+      #     conda install -y ocp=7.5.3.0
+      #     $CONDA/bin/pip install --upgrade pip
+      #     $CONDA/bin/pip install auditwheel build
+      #     $CONDA/bin/python -m build --no-isolation
+      #   # python -m cibuildwheel --output-dir dir
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ocpvtk-wheel
-          path: dist
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ocpvtk-wheel
+      #     path: dist
 
       # # see https://github.com/marketplace/actions/pypi-publish
       # - name: Publish to PyPI
