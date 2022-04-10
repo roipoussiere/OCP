@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # os: [ "ubuntu", "macos", "windows" ]
-        os: [ "ubuntu" ]
+        os: [ "ubuntu", "macos" ]
         python-version: [ "3.9" ]
 
     steps:
@@ -45,8 +45,8 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -y ocp=7.5.3.0
-          python -m pip install --upgrade pip
-          python -m pip install auditwheel build
+          pip install --upgrade pip
+          pip install auditwheel build
           python -m build --no-isolation
         # python -m cibuildwheel --output-dir dir
 
