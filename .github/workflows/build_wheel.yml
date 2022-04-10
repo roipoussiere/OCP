@@ -38,18 +38,16 @@ jobs:
 
       # see https://cibuildwheel.readthedocs.io/en/stable/
       - name: Install cibuildwheel
-        run: $CONDA/bin/pip install cibuildwheel==2.4.0
-        # shell: bash -l {0}
-        # run: pip install cibuildwheel==2.4.0
+        shell: bash -l {0}
+        run: pip install cibuildwheel==2.4.0
 
       - name: Install OCP
-        run: conda install -y ocp=7.5.3.0
-        # shell: bash -l {0}
-        # run: conda install -n cadquery -y ocp=7.5.3.0
+        shell: bash -l {0}
+        run: conda install -n cadquery -y ocp=7.5.3.0
 
       - name: Build wheels
         shell: bash -l {0}
-        run: $CONDA/bin/python -m cibuildwheel --output-dir dist
+        run: python -m cibuildwheel --output-dir dist
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
