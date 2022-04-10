@@ -29,7 +29,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: env.yml
           channels: conda-forge
-          auto-activate-base: false
+          auto-activate-base: true
 
       - name: Print info
         shell: bash -l {0}
