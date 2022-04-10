@@ -27,7 +27,7 @@ jobs:
           miniforge-version: latest
           activate-environment: cadquery
           python-version: ${{ matrix.python-version }}
-          environment-file: env.yml
+          # environment-file: env.yml
           channels: conda-forge
 
       - name: Print info
@@ -44,7 +44,7 @@ jobs:
       - name: Build wheels
         shell: bash -l {0}
         run: |
-          $CONDA/bin/conda install -y ocp=7.5.3.0
+          conda install -n cadquery -y ocp=7.5.3.0
           pip install --upgrade pip
           pip install auditwheel build
           python -m build --no-isolation
