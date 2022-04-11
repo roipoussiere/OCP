@@ -20,14 +20,6 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Build wheel
-        run: pip install .
-
       # See https://cibuildwheel.readthedocs.io/en/stable/
       # Not usable for now, because cadquery libraries require glibc 2.31,
       # but the manylinux images have been created only up to 2.24 (as of 2022-04-11).
@@ -36,15 +28,15 @@ jobs:
       #   with:
       #     output-dir: dist
 
-      # # see https://github.com/marketplace/actions/setup-miniconda
-      # - name: Setup Conda
-      #   uses: conda-incubator/setup-miniconda@v2
-      #   with:
-      #     miniforge-version: latest
-      #     activate-environment: cadquery
-      #     python-version: ${{ matrix.python-version }}
-      #     environment-file: env.yml
-      #     channels: conda-forge
+      # see https://github.com/marketplace/actions/setup-miniconda
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: latest
+          activate-environment: cadquery
+          python-version: ${{ matrix.python-version }}
+          environment-file: env.yml
+          channels: conda-forge
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2

@@ -5,14 +5,21 @@ Build OCP+VTK wheel with shared library dependencies bundled
     *** as it does not include the requisite license texts ***
     *** of the bundled libraries.                          ***
 
-From the directory containing this file:
+From the directory containing this file, and with an appropriate conda
+environment activated:
 
-    $ python -m build
+    $ python -m build --no-isolation
 
 will build a manylinux wheel into `dist/`.
 
-This setuptools build script works by installing Miniforge and then
-OCP into the base conda environment.  Then we copy the installed `OCP`
+A conda environment with `OCP` (and all its dependencies, including
+`vtk`), `auditwheel`, and `build` (the PEP 517 compatible Python
+package builder) python packages is required, as well as the
+`patchelf` binary.  Note that the vtk package needs to be bundled to
+avoid multiple copies of the VTK shared libraries, which appears to
+cause errors.
+
+This setuptools build script works by first adding the installed `OCP`
 and `vtk` python package files into a wheel.  This wheel is not
 portable as library dependencies are missing, so we use auditwheel to
 bundle them into the wheel.
@@ -24,85 +31,34 @@ produce macOS and Windows wheels.
 
 """
 
-import atexit
+import OCP
 import glob
 import json
 import os.path
 import platform
-import requests
 from setuptools import Extension, setup
 import setuptools.command.build_ext
 import shutil
 import subprocess
 import sys
-import tempfile
+import vtkmodules
 import wheel.bdist_wheel
 
 
-# The version we will install from conda-forge and
-# package into the wheel
-OCP_VERSION = "7.5.3.0"
-
-
-# Where to install Miniforge.
-CONDA_PREFIX = tempfile.mkdtemp(prefix="miniforge3-")
-atexit.register(shutil.rmtree, CONDA_PREFIX, ignore_errors=True)
-
-
-def download_miniforge(filename):
-    # Download Miniforge.  Url taken from https://github.com/conda-forge/miniforge#downloading-the-installer-as-part-of-a-ci-pipeline
-    uname = platform.uname()
-    url = f"https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-{uname.system}-{uname.machine}.sh"
-    req = requests.get(url)
-    req.raise_for_status()
-    with open(filename, "wb") as f:
-        f.write(req.content)
-
-
 class copy_installed(setuptools.command.build_ext.build_ext):
-    """Build by installing OCP and copying files"""
+    """Build by copying files installed by conda"""
 
     def build_extension(self, ext):
-        def with_conda(cmd):
-            # Run a shell command with conda activated
-            subprocess.check_call(f". {CONDA_PREFIX}/bin/activate; {cmd}", shell=True)
-
-        # Install Miniforge to CONDA_PREFIX
-        download_miniforge("Miniforge3.sh")
-        subprocess.check_call(["bash", "Miniforge3.sh", "-b", "-u", "-p", CONDA_PREFIX])
-
-        # Display info for logging
-        with_conda("conda info")
-
-        # Install the correct python version and OCP.
-        with_conda(
-            f"conda install -y python={sys.version_info.major}.{sys.version_info.minor} ocp={OCP_VERSION}"
-        )
-
-        # List packages for logging
-        with_conda("conda list")
-        with_conda("conda list --explicit")
-
-        # Get the OCP and vtkmodules install locations
-        out = subprocess.check_output(
-            [
-                f"{CONDA_PREFIX}/bin/python",
-                "-c",
-                "import json, OCP, vtkmodules; print(json.dumps([OCP.__file__, vtkmodules.__file__]))",
-            ]
-        )
-        OCP_file, vtkmodules_file = json.loads(out)
-
         # self.build_lib is created when packages are copied.  But
         # there are no packages, so we have to create it here.
         os.mkdir(os.path.dirname(self.build_lib))
         os.mkdir(self.build_lib)
         # OCP is a single-file extension; just copy it
-        shutil.copy(OCP_file, self.build_lib)
+        shutil.copy(OCP.__file__, self.build_lib)
         # vtkmodules is a package; copy it while excluding __pycache__
-        assert vtkmodules_file.endswith("/vtkmodules/__init__.py")
+        assert vtkmodules.__file__.endswith("/vtkmodules/__init__.py")
         shutil.copytree(
-            os.path.dirname(vtkmodules_file),
+            os.path.dirname(vtkmodules.__file__),
             os.path.join(self.build_lib, "vtkmodules"),
             ignore=shutil.ignore_patterns("__pycache__"),
         )
@@ -129,7 +85,7 @@ class bdist_wheel_repaired(wheel.bdist_wheel.bdist_wheel):
         # But the relative RPATHs are broken, so this fails.  Thankfully,
         # RPATHs all resolve to $conda_prefix/lib, so we can set
         # LD_LIBRARY_PATH to allow `auditwheel` to find them.
-        lib_path = os.path.join(CONDA_PREFIX, "lib")
+        lib_path = os.path.join(conda_prefix, "lib")
 
         # Do the repair, placing the repaired wheel into out_dir.
         out_dir = os.path.join(self.dist_dir, "repaired")
@@ -187,7 +143,9 @@ def repair_wheel_macos(lib_path, whl, out_dir):
     args = [
         "env",
         f"LD_LIBRARY_PATH={lib_path}",
-        os.path.join(sys.prefix, "bin/delocate-listdeps"),
+        sys.executable,
+        "-m",
+        "delocate.cmd.delocate_listdeps",
         whl,
     ]
     subprocess.check_call(args)
@@ -196,7 +154,9 @@ def repair_wheel_macos(lib_path, whl, out_dir):
     args = [
         "env",
         f"LD_LIBRARY_PATH={lib_path}",
-        os.path.join(sys.prefix, "bin/delocate-wheel"),
+        sys.executable,
+        "-m",
+        "delocate.cmd.delocate_wheel",
         f"--wheel-dir={out_dir}",
         whl,
     ]
@@ -217,9 +177,16 @@ def repair_wheel_windows(lib_path, whl, out_dir):
     subprocess.check_call(args)
 
 
+# Get the metadata for conda and the `ocp` package.
+args = ["conda", "info", "--json"]
+info = json.loads(subprocess.check_output(args))
+conda_prefix = info["conda_prefix"]
+args = ["conda", "list", "--json", "^ocp$"]
+[ocp_meta] = json.loads(subprocess.check_output(args))
+
 setup(
     name="ocpvtk",
-    version=OCP_VERSION,
+    version=ocp_meta["version"],
     # Dummy extension to trigger build_ext
     ext_modules=[Extension("__dummy__", sources=[])],
     cmdclass={"bdist_wheel": bdist_wheel_repaired, "build_ext": copy_installed},
