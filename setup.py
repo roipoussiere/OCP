@@ -180,7 +180,7 @@ def repair_wheel_windows(lib_path, whl, out_dir):
 # Get the metadata for conda and the `ocp` package.
 args = ["conda", "info", "--json"]
 info = json.loads(subprocess.check_output(args))
-conda_prefix = info["conda_prefix"]
+conda_prefix = info["active_prefix"]
 args = ["conda", "list", "--json", "^ocp$"]
 [ocp_meta] = json.loads(subprocess.check_output(args))
 

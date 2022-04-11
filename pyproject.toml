@@ -1,2 +1,0 @@
-[build-system]
-requires = ["setuptools", "wheel", "requests", "auditwheel;platform_system=='Linux'", "delocate;platform_system=='MacOS'", "delvewheel;platform_system=='Windows'"]
