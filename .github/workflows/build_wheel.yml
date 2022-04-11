@@ -35,25 +35,11 @@ jobs:
           conda info
           conda list
 
-      - name: Install OCP
-        shell: bash -l {0}
-        run: conda install -n cadquery -y ocp=7.5.3.0 vtk=9.1.0
-
-      - name: Build wheels (ubuntu)
-        if: ${{ matrix.os }} == "ubuntu"
-        shell: bash -l {0}
-        run: |
-          pip install --upgrade pip
-          pip install auditwheel build
-          python -m build --no-isolation
-
-      # - name: Build wheels (macos)
-      #   if: ${{ matrix.os }} == "macos"
-      #   shell: bash -l {0}
-      #   run: |
-      #     pip install --upgrade pip
-      #     pip install delocate build
-      #     python -m build --no-isolation
+      # see https://cibuildwheel.readthedocs.io/en/stable/
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.4.0
+        with:
+          output-dir: dist
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
