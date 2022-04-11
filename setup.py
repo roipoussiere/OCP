@@ -142,7 +142,7 @@ def repair_wheel_macos(lib_path, whl, out_dir):
 
     args = [
         "env",
-        f"LD_LIBRARY_PATH={lib_path}",
+        f"DYLD_LIBRARY_PATH={lib_path}",
         sys.executable,
         "-m",
         "delocate.cmd.delocate_listdeps",
@@ -153,7 +153,7 @@ def repair_wheel_macos(lib_path, whl, out_dir):
     # Overwrites the wheel in-place by default
     args = [
         "env",
-        f"LD_LIBRARY_PATH={lib_path}",
+        f"DYLD_LIBRARY_PATH={lib_path}",
         sys.executable,
         "-m",
         "delocate.cmd.delocate_wheel",
@@ -161,7 +161,6 @@ def repair_wheel_macos(lib_path, whl, out_dir):
         whl,
     ]
     subprocess.check_call(args)
-
 
 def repair_wheel_windows(lib_path, whl, out_dir):
     args = [sys.executable, "-m", "delvewheel", "show", whl]
