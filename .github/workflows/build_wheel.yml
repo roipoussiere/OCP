@@ -25,6 +25,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Build wheel
+        run: python setup.py
       # See https://cibuildwheel.readthedocs.io/en/stable/
       # Not usable for now, because cadquery libraries require glibc 2.31,
       # but the manylinux images have been created only up to 2.24 (as of 2022-04-11).
