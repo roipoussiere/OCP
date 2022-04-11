@@ -11,7 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ 'ubuntu', 'macos', 'windows' ]
+        # os: [ 'ubuntu', 'macos', 'windows' ]
+        os: [ 'ubuntu', 'macos' ]
         python-version: [ '3.9' ]
 
     steps:
@@ -53,7 +54,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          path: dist
+          path: dist/
 
       # see https://github.com/marketplace/actions/pypi-publish
       - name: Publish to PyPI
