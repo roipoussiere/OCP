@@ -24,51 +24,75 @@ produce macOS and Windows wheels.
 
 """
 
+import atexit
 import glob
 import json
-import os
 import os.path
 import platform
+import requests
 from setuptools import Extension, setup
 import setuptools.command.build_ext
+import shutil
 import subprocess
 import sys
+import tempfile
 import wheel.bdist_wheel
-import shutil
 
 
 # The version we will install from conda-forge and
 # package into the wheel
-OCP_VERSION="7.5.3.0"
+OCP_VERSION = "7.5.3.0"
 
 
 # Where to install Miniforge.
-CONDA_PREFIX = os.path.expanduser("~/miniforge3")
+CONDA_PREFIX = tempfile.mkdtemp(prefix="miniforge3-")
+atexit.register(shutil.rmtree, CONDA_PREFIX, ignore_errors=True)
+
+
+def download_miniforge(filename):
+    # Download Miniforge.  Url taken from https://github.com/conda-forge/miniforge#downloading-the-installer-as-part-of-a-ci-pipeline
+    uname = platform.uname()
+    url = f"https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-{uname.system}-{uname.machine}.sh"
+    req = requests.get(url)
+    req.raise_for_status()
+    with open(filename, "wb") as f:
+        f.write(req.content)
 
 
 class copy_installed(setuptools.command.build_ext.build_ext):
     """Build by installing OCP and copying files"""
 
     def build_extension(self, ext):
+        def with_conda(cmd):
+            # Run a shell command with conda activated
+            subprocess.check_call(f". {CONDA_PREFIX}/bin/activate; {cmd}", shell=True)
 
-        # Download Miniforge.  Taken from https://github.com/conda-forge/miniforge#downloading-the-installer-as-part-of-a-ci-pipeline
-        cmd = 'wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"'
-        subprocess.check_call(['sh', '-c', cmd])
-
-        # Install Miniforge to $HOME/miniforge3
+        # Install Miniforge to CONDA_PREFIX
+        download_miniforge("Miniforge3.sh")
         subprocess.check_call(["bash", "Miniforge3.sh", "-b", "-u", "-p", CONDA_PREFIX])
 
+        # Display info for logging
+        with_conda("conda info")
+
         # Install the correct python version and OCP.
-        cmd = f"conda install -y python={sys.version_info.major}.{sys.version_info.minor} ocp={OCP_VERSION}"
-        subprocess.check_call(f". {CONDA_PREFIX}/bin/activate; {cmd}", shell=True)
+        with_conda(
+            f"conda install -y python={sys.version_info.major}.{sys.version_info.minor} ocp={OCP_VERSION}"
+        )
+
+        # List packages for logging
+        with_conda("conda list")
+        with_conda("conda list --explicit")
 
         # Get the OCP and vtkmodules install locations
-        out = subprocess.check_output([
-            f"{CONDA_PREFIX}/bin/python",
-            "-c",
-            "import json, OCP, vtkmodules; print(json.dumps([OCP.__file__, vtkmodules.__file__]))"])
+        out = subprocess.check_output(
+            [
+                f"{CONDA_PREFIX}/bin/python",
+                "-c",
+                "import json, OCP, vtkmodules; print(json.dumps([OCP.__file__, vtkmodules.__file__]))",
+            ]
+        )
         OCP_file, vtkmodules_file = json.loads(out)
-        
+
         # self.build_lib is created when packages are copied.  But
         # there are no packages, so we have to create it here.
         os.mkdir(os.path.dirname(self.build_lib))
@@ -107,28 +131,31 @@ class bdist_wheel_repaired(wheel.bdist_wheel.bdist_wheel):
         # LD_LIBRARY_PATH to allow `auditwheel` to find them.
         lib_path = os.path.join(CONDA_PREFIX, "lib")
 
+        # Do the repair, placing the repaired wheel into out_dir.
+        out_dir = os.path.join(self.dist_dir, "repaired")
         system = platform.system()
         if system == "Linux":
-            # Do the repair, placing the manylinux wheel into the same
-            # directory as the linux whl
-            plat = "manylinux_2_31_x86_64"
-            manylinux_whl = repair_wheel_linux(lib_path, bad_whl, plat, self.dist_dir)
-
-            # Only one whl is expected, so keep only the manylinux wheel
-            # on disk, and replace the linux wheel with the manylinux
-            # wheel in `dist_files`, and
-            os.remove(bad_whl)
-            dist_files[0] = dist_files[0][:-1] + (manylinux_whl,)
-
-        elif system == "MacOS":
-            # The repaired wheel will overwrite the broken wheel
-            repair_wheel_macos(lib_path, bad_whl)
-
+            repair_wheel_linux(lib_path, bad_whl, out_dir)
+        elif system == "Darwin":
+            repair_wheel_macos(lib_path, bad_whl, out_dir)
+        elif system == "Windows":
+            repair_wheel_windows(lib_path, bad_whl, out_dir)
         else:
             raise Exception(f"unsupported system {system!r}")
 
+        # Exactly one whl is expected in the dist dir, so delete the
+        # bad wheel and move the repaired wheel in.
+        [repaired_whl] = glob.glob(os.path.join(out_dir, "*.whl"))
+        os.unlink(bad_whl)
+        new_whl = os.path.join(self.dist_dir, os.path.basename(repaired_whl))
+        shutil.move(repaired_whl, new_whl)
+        os.rmdir(out_dir)
+        dist_files[0] = dist_files[0][:-1] + (new_whl,)
 
-def repair_wheel_linux(lib_path, whl, plat, out_dir):
+
+def repair_wheel_linux(lib_path, whl, out_dir):
+
+    plat = "manylinux_2_31_x86_64"
 
     args = [
         "env",
@@ -154,12 +181,8 @@ def repair_wheel_linux(lib_path, whl, plat, out_dir):
     ]
     subprocess.check_call(args)
 
-    [repaired] = glob.glob(os.path.join(out_dir, f"*-manylinux*.whl"))
-    return repaired
 
-
-
-def repair_wheel_macos(lib_path, whl):
+def repair_wheel_macos(lib_path, whl, out_dir):
 
     args = [
         "env",
@@ -174,11 +197,24 @@ def repair_wheel_macos(lib_path, whl):
         "env",
         f"LD_LIBRARY_PATH={lib_path}",
         os.path.join(sys.prefix, "bin/delocate-wheel"),
+        f"--wheel-dir={out_dir}",
         whl,
     ]
     subprocess.check_call(args)
 
-    return whl
+
+def repair_wheel_windows(lib_path, whl, out_dir):
+    args = [sys.executable, "-m", "delvewheel", "show", whl]
+    subprocess.check_call(args)
+    args = [
+        sys.executable,
+        "-m",
+        "delvewheel",
+        "repair",
+        f"--wheel-dir={out_dir}",
+        whl,
+    ]
+    subprocess.check_call(args)
 
 
 setup(
