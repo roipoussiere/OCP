@@ -56,7 +56,7 @@ class copy_installed(setuptools.command.build_ext.build_ext):
         # OCP is a single-file extension; just copy it
         shutil.copy(OCP.__file__, self.build_lib)
         # vtkmodules is a package; copy it while excluding __pycache__
-        assert vtkmodules.__file__.endswith("/vtkmodules/__init__.py")
+        assert vtkmodules.__file__.endswith(os.path.join(os.sep, "vtkmodules", "__init__.py"))
         shutil.copytree(
             os.path.dirname(vtkmodules.__file__),
             os.path.join(self.build_lib, "vtkmodules"),
