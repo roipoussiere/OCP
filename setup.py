@@ -162,6 +162,7 @@ def repair_wheel_macos(lib_path, whl, out_dir):
     ]
     subprocess.check_call(args)
 
+
 def repair_wheel_windows(lib_path, whl, out_dir):
     args = [sys.executable, "-m", "delvewheel", "show", whl]
     subprocess.check_call(args)
@@ -177,10 +178,11 @@ def repair_wheel_windows(lib_path, whl, out_dir):
 
 
 # Get the metadata for conda and the `ocp` package.
-args = ["conda", "info", "--json"]
+conda = "conda.bat" if platform.system() == "Windows" else "conda"
+args = [conda, "info", "--json"]
 info = json.loads(subprocess.check_output(args))
-conda_prefix = info["active_prefix"]
-args = ["conda", "list", "--json", "^ocp$"]
+conda_prefix = info["active_prefix"] or info["conda_prefix"]
+args = [conda, "list", "--json", "^ocp$"]
 [ocp_meta] = json.loads(subprocess.check_output(args))
 
 setup(
