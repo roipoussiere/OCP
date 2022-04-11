@@ -1,2 +1,2 @@
 [build-system]
-requires = ["setuptools", "wheel", "auditwheel", "delocate"]
+requires = ["wget", "setuptools", "wheel", "auditwheel", "delocate"]
