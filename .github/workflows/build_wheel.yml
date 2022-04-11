@@ -38,6 +38,20 @@ jobs:
           environment-file: env.yml
           channels: conda-forge
 
+      - name: Print info
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+
+      - name: Python build
+        shell: bash -l {0}
+        run: |
+          conda install -n cadquery -y ocp=7.5.3.0
+          pip install --upgrade pip
+          pip install auditwheel build
+          python -m build --no-isolation
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
