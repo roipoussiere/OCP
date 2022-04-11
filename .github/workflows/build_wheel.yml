@@ -11,8 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        # os: [ 'ubuntu', 'macos', 'windows' ]
-        os: [ 'ubuntu', 'macos' ]
+        os: [ 'ubuntu', 'macos', 'windows' ]
         python-version: [ '3.9' ]
 
     steps:
@@ -54,7 +53,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ocpvtk-wheel
           path: dist
 
       # see https://github.com/marketplace/actions/pypi-publish
