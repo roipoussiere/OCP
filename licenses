@@ -1,43 +1,43 @@
-/usr/share/miniconda3/conda-meta/_libgcc_mutex-0.1-conda_forge.json:    "license": "None",
-/usr/share/miniconda3/conda-meta/_openmp_mutex-4.5-1_gnu.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/brotlipy-0.7.0-py39h3811e60_1003.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/bzip2-1.0.8-h7f98852_4.json:    "license": "bzip2-1.0.6",
-/usr/share/miniconda3/conda-meta/ca-certificates-2021.10.8-ha878542_0.json:    "license": "ISC",
-/usr/share/miniconda3/conda-meta/certifi-2021.10.8-py39hf3d152e_1.json:    "license": "ISC",
-/usr/share/miniconda3/conda-meta/cffi-1.15.0-py39h4bc2ebd_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/charset-normalizer-2.0.12-pyhd8ed1ab_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/colorama-0.4.4-pyh9f0ad1d_0.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/conda-4.12.0-py39hf3d152e_0.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/conda-package-handling-1.8.0-py39hb9d737c_0.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/cryptography-36.0.2-py39hd97740a_0.json:    "license": "Apache-2.0 AND BSD-3-Clause AND PSF-2.0 AND MIT",
-/usr/share/miniconda3/conda-meta/idna-3.3-pyhd8ed1ab_0.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/ld_impl_linux-64-2.36.1-hea4e1c9_2.json:    "license": "GPL-3.0-only",
-/usr/share/miniconda3/conda-meta/libffi-3.4.2-h7f98852_5.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/libgcc-ng-11.2.0-h1d223b6_14.json:    "license": "GPL-3.0-only WITH GCC-exception-3.1",
-/usr/share/miniconda3/conda-meta/libgomp-11.2.0-h1d223b6_14.json:    "license": "GPL-3.0-only WITH GCC-exception-3.1",
-/usr/share/miniconda3/conda-meta/libnsl-2.0.0-h7f98852_0.json:    "license": "GPL-2.0-only",
-/usr/share/miniconda3/conda-meta/libuuid-2.32.1-h7f98852_1000.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/libzlib-1.2.11-h36c2ea0_1013.json:    "license": "Zlib",
-/usr/share/miniconda3/conda-meta/ncurses-6.3-h9c3ff4c_0.json:    "license": "X11 AND BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/openssl-1.1.1l-h7f98852_0.json:    "license": "OpenSSL",
-/usr/share/miniconda3/conda-meta/pip-22.0.4-pyhd8ed1ab_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/pycosat-0.6.3-py39h3811e60_1009.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/pycparser-2.21-pyhd8ed1ab_0.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/pyopenssl-22.0.0-pyhd8ed1ab_0.json:    "license": "Apache-2.0",
-/usr/share/miniconda3/conda-meta/pysocks-1.7.1-py39hf3d152e_4.json:    "license": "BSD 3-Clause",
-/usr/share/miniconda3/conda-meta/python-3.9.10-h85951f9_2_cpython.json:    "license": "Python-2.0",
-/usr/share/miniconda3/conda-meta/python_abi-3.9-2_cp39.json:    "license": "BSD-3-Clause",
-/usr/share/miniconda3/conda-meta/readline-8.1-h46c0cb4_0.json:    "license": "GPL-3.0-only",
-/usr/share/miniconda3/conda-meta/requests-2.27.1-pyhd8ed1ab_0.json:    "license": "Apache-2.0",
-/usr/share/miniconda3/conda-meta/ruamel_yaml-0.15.80-py39h3811e60_1006.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/setuptools-60.10.0-py39hf3d152e_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/six-1.16.0-pyh6c4a22f_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/sqlite-3.37.1-h4ff8645_0.json:    "license": "Unlicense",
-/usr/share/miniconda3/conda-meta/tk-8.6.12-h27826a3_0.json:    "license": "TCL",
-/usr/share/miniconda3/conda-meta/tqdm-4.63.0-pyhd8ed1ab_0.json:    "license": "MPL-2.0 or MIT",
-/usr/share/miniconda3/conda-meta/tzdata-2022a-h191b570_0.json:    "license": "LicenseRef-Public-Domain",
-/usr/share/miniconda3/conda-meta/urllib3-1.26.9-pyhd8ed1ab_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/wheel-0.37.1-pyhd8ed1ab_0.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/xz-5.2.5-h516909a_1.json:    "license": "LGPL-2.1 and GPL-2.0",
-/usr/share/miniconda3/conda-meta/yaml-0.2.5-h7f98852_2.json:    "license": "MIT",
-/usr/share/miniconda3/conda-meta/zlib-1.2.11-h36c2ea0_1013.json:    "license": "Zlib",
+_libgcc_mutex-0.1: None
+_openmp_mutex-4.5: BSD-3-Clause
+brotlipy-0.7.0: MIT
+bzip2-1.0.8: bzip2-1.0.6
+ca-certificates-2021.10.8: ISC
+certifi-2021.10.8: ISC
+cffi-1.15.0: MIT
+charset-normalizer-2.0.12: MIT
+colorama-0.4.4: BSD-3-Clause
+conda-4.12.0: BSD-3-Clause
+conda-package-handling-1.8.0: BSD-3-Clause
+cryptography-36.0.2: Apache-2.0 AND BSD-3-Clause AND PSF-2.0 AND MIT
+idna-3.3: BSD-3-Clause
+ld_impl_linux-64-2.36.1: GPL-3.0-only
+libffi-3.4.2: MIT
+libgcc-ng-11.2.0: GPL-3.0-only WITH GCC-exception-3.1
+libgomp-11.2.0: GPL-3.0-only WITH GCC-exception-3.1
+libnsl-2.0.0: GPL-2.0-only
+libuuid-2.32.1: BSD-3-Clause
+libzlib-1.2.11: Zlib
+ncurses-6.3: X11 AND BSD-3-Clause
+openssl-1.1.1l: OpenSSL
+pip-22.0.4: MIT
+pycosat-0.6.3: MIT
+pycparser-2.21: BSD-3-Clause
+pyopenssl-22.0.0: Apache-2.0
+pysocks-1.7.1: BSD 3-Clause
+python-3.9.10: Python-2.0
+python_abi-3.9: BSD-3-Clause
+readline-8.1: GPL-3.0-only
+requests-2.27.1: Apache-2.0
+ruamel_yaml-0.15.80: MIT
+setuptools-60.10.0: MIT
+six-1.16.0: MIT
+sqlite-3.37.1: Unlicense
+tk-8.6.12: TCL
+tqdm-4.63.0: MPL-2.0 or MIT
+tzdata-2022a: LicenseRef-Public-Domain
+urllib3-1.26.9: MIT
+wheel-0.37.1: MIT
+xz-5.2.5: LGPL-2.1 and GPL-2.0
+yaml-0.2.5: MIT
+zlib-1.2.11: Zlib
