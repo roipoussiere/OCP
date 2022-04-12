@@ -54,6 +54,7 @@ jobs:
         run: |
           conda info
           conda list --explicit
+          echo '${{ github.event_name }} ${{ github.ref }}'
 
       - name: Test wheel
         shell: bash -l {0}
@@ -61,16 +62,18 @@ jobs:
           pip install 'git+https://github.com/CadQuery/cadquery' ezdxf multimethod nlopt nptyping typish
           python -c "import cadquery; cadquery.Workplane('XY').box(1,2,3).toSvg()"
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+      - name: Publish release
+        # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          name: ocp-vtk_${{ matrix.os }}-cp${{ matrix.python-version }}
-          path: dist/
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            dist/*
 
       # see https://github.com/marketplace/actions/pypi-publish
       - name: Publish to PyPI
-        # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        if: matrix.os == 'windows'
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags') && matrix.os == 'ubuntu'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
