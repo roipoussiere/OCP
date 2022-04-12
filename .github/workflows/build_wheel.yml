@@ -3,7 +3,7 @@ name: Create Python wheel using Conda
 on:
   push:
     tags:
-      - "*"
+      - "v*"
 
 jobs:
   build:
