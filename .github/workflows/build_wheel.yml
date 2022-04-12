@@ -43,7 +43,7 @@ jobs:
           conda list
 
       - name: Print licenses
-        if: ${{ matrix.os }} == 'ubuntu'
+        if: matrix.os == 'ubuntu'
         run: |
           grep '"license":' $CONDA/conda-meta/*.json | sed -e 's/.*\/conda-meta\/\(.*-.*\)-.*"license": "\(.*\)".*/\1: \2/'
 
