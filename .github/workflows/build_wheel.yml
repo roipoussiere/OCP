@@ -36,12 +36,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
 
-      - name: Print info
-        shell: bash -l {0}
-        run: |
-          conda info
-          conda list --explicit
-
       - name: Print licenses
         if: matrix.os == 'ubuntu'
         run: |
@@ -54,6 +48,12 @@ jobs:
           pip install --upgrade pip
           pip install build setuptools wheel requests auditwheel delocate delvewheel
           python -m build --no-isolation
+
+      - name: Print info
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list --explicit
 
       - name: Test wheel
         shell: bash -l {0}
