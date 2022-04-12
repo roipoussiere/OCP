@@ -11,8 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        # os: [ 'ubuntu', 'macos', 'windows' ]
-        os: [ 'ubuntu' ]
+        os: [ 'ubuntu', 'macos', 'windows' ]
         python-version: [ '3.9' ]
 
     steps:
