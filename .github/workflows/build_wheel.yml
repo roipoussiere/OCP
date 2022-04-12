@@ -42,7 +42,11 @@ jobs:
         run: |
           conda info
           conda list
-          grep '"license":' $CONDA/conda-meta/*.json
+
+      - name: Print licenses
+        if: ${{ matrix.os }} == 'ubuntu'
+        run: |
+          grep '"license":' $CONDA/conda-meta/*.json | sed -e 's/.*\/conda-meta\/\(.*-.*\)-.*"license": "\(.*\)".*/\1: \2/'
 
       - name: Build wheel
         shell: bash -l {0}
@@ -61,7 +65,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ocp-vtk-${{ matrix.os }}-${{ matrix.python-version }}
+          name: ocpvtk-${{ matrix.os }}-cp${{ matrix.python-version }}
           path: dist/
 
       # see https://github.com/marketplace/actions/pypi-publish
