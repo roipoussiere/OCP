@@ -56,7 +56,7 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install git+https://github.com/CadQuery/cadquery ezdxf multimethod nlopt nptyping<2
-          python -c 'import cadquery, cadquery.Workplane('XY').box(1,2,3).toSvg()'
+          python -c "import cadquery, cadquery.Workplane('XY').box(1,2,3).toSvg()"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
