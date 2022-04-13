@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build for ${{ matrix.os }}
+    name: Build for python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}-latest
 
     strategy:
@@ -65,5 +65,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ocpvtk-${{ matrix.os }}-cp${{ matrix.python-version }}
+          name: ocpvtk-${{ matrix.os }}-cp${{ matrix.python-version }}.whl
           path: dist/*.whl

@@ -25,7 +25,7 @@ jobs:
         # check_artifacts: true
 
     - name: Display info
-      run: ls wheels
+      run: ls -R wheels
 
     # https://github.com/marketplace/actions/create-release
     - uses: ncipollo/release-action@v1
