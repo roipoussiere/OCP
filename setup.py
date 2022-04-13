@@ -267,7 +267,7 @@ def write_licenses(prefix, whl, always_pkgs, added_files, out):
                 desc = f"{i} of {len(licenses)} license files"
             else:
                 desc = "the only license file"
-            print(f"Contents of {fn.replace(pkg_dir, "", 1).lstrip(os.sep)} ({desc}):", file=out)
+            print(f"Contents of {fn.replace(pkg_dir, '', 1).lstrip(os.sep)} ({desc}):", file=out)
             with open(fn, "rb") as f:
                 raw = f.read()
             for l in raw.decode(errors="replace").splitlines():
