@@ -261,7 +261,7 @@ def write_licenses(prefix, whl, always_pkgs, added_files, out):
         print(file=out)
         print(f"Conda package: {m['name']}", file=out)
         print(f"Download url: {m['url']}", file=out)
-        print(f"License: {m['license']}", file=out)
+        print(f"License: {m.get('license', 'unknown')}", file=out)
         for i, fn in enumerate(licenses, 1):
             if len(licenses) > 1:
                 desc = f"{i} of {len(licenses)} license files"
