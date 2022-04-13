@@ -30,7 +30,7 @@ jobs:
     # https://github.com/marketplace/actions/create-release
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: "wheels/*.whl"
+        artifacts: "wheels/**/*.whl"
         token: ${{ secrets.GITHUB_TOKEN }}
 
       # # see https://github.com/marketplace/actions/pypi-publish
