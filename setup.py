@@ -36,6 +36,7 @@ import glob
 import json
 import os.path
 import platform
+import re
 from setuptools import Extension, setup
 import setuptools.command.build_ext
 import shutil
@@ -43,6 +44,7 @@ import subprocess
 import sys
 import vtkmodules
 import wheel.bdist_wheel
+import zipfile
 
 
 class copy_installed(setuptools.command.build_ext.build_ext):
@@ -75,6 +77,8 @@ class bdist_wheel_repaired(wheel.bdist_wheel.bdist_wheel):
         # recorded in `dist_files`
         [(_, _, bad_whl)] = dist_files
         assert os.path.dirname(bad_whl) == self.dist_dir
+        with zipfile.ZipFile(bad_whl) as f:
+            bad_whl_files = set(zi.filename for zi in f.infolist() if not zi.is_dir())
 
         # Conda libraries depend on their location in $conda_prefix because
         # relative RPATHs are used find libraries elsewhere in $conda_prefix
@@ -99,9 +103,15 @@ class bdist_wheel_repaired(wheel.bdist_wheel.bdist_wheel):
         else:
             raise Exception(f"unsupported system {system!r}")
 
+        # Add licenses of bundled libraries
+        [repaired_whl] = glob.glob(os.path.join(out_dir, "*.whl"))
+        with zipfile.ZipFile(repaired_whl) as f:
+            repaired_whl_files = set(zi.filename for zi in f.infolist() if not zi.is_dir())
+        added_files = repaired_whl_files - bad_whl_files
+        add_licenses_bundled(conda_prefix, repaired_whl, added_files)
+
         # Exactly one whl is expected in the dist dir, so delete the
         # bad wheel and move the repaired wheel in.
-        [repaired_whl] = glob.glob(os.path.join(out_dir, "*.whl"))
         os.unlink(bad_whl)
         new_whl = os.path.join(self.dist_dir, os.path.basename(repaired_whl))
         shutil.move(repaired_whl, new_whl)
@@ -175,6 +185,93 @@ def repair_wheel_windows(lib_path, whl, out_dir):
         whl,
     ]
     subprocess.check_call(args)
+
+
+def add_licenses_bundled(conda_prefix, whl, added_files):
+    """
+    Add licenses of bundled libraries
+
+    A file called "LICENSES_bundled.txt" will be added into the wheel,
+    containing the license files of bundled libraries.  License
+    information is taken from metadata in the conda env.
+
+    """
+    with open("LICENSES_bundled.txt", "w") as f:
+        f.write("This wheel distribution bundles a number of libraries that\n")
+        f.write("are compatibly licensed.  We list them here.\n")
+        write_licenses(conda_prefix, whl, ["ocp", "vtk"], added_files, f)
+    with zipfile.ZipFile(whl, mode="a") as f:
+        f.write("LICENSES_bundled.txt")
+
+
+def write_licenses(prefix, whl, always_pkgs, added_files, out):
+    """
+    Write licenses of bundled libraries to out
+
+    """
+
+    # Mapping from package name (e.g. "ocp") to metadata
+    pkgs = {}
+
+    # Mapping from name of installed file (e.g. "libfoo.so") to
+    # packages that may have installed it
+    name_to_pkgs = {}
+
+    # Populate the two maps above
+    meta_pat = os.path.join(prefix, "conda-meta", "*.json")
+    for fn in glob.glob(meta_pat):
+        with open(fn) as f:
+            meta = json.load(f)
+            pkgs[meta["name"]] = meta
+        for p in meta["files"]:
+            name_to_pkgs.setdefault(os.path.basename(p), set()).add(meta["name"])
+
+    # Figure out which packages the added files are from
+    bundled_pkgs = set()
+    added_files = sorted(added_files)
+    not_found = []
+    print(f"{added_files=}")
+    for fn in added_files:
+        n = os.path.basename(fn)
+        if n in name_to_pkgs:
+            bundled_pkgs.update(name_to_pkgs[n])
+            continue
+        # auditwheel and delvewheel rename bundled libraries to avoid
+        # clashes.  We undo this renaming in order to match to file
+        # lists in conda.
+        m = re.match("^([^.]+)-[0-9A-Fa-f]{4,}([.].+)$", n)
+        if m:
+            u = m.group(1) + m.group(2)
+            if u in name_to_pkgs:
+                bundled_pkgs.update(name_to_pkgs[u])
+                continue
+        not_found.append(fn)
+    print(f"{not_found=}")
+    bundled_pkgs = sorted(bundled_pkgs)
+    print(f"{bundled_pkgs=}")
+
+    for n in sorted(set(always_pkgs) | set(bundled_pkgs)):
+        m = pkgs[n]
+        pkg_dir = os.path.normpath(m["extracted_package_dir"])
+        info_pat = os.path.join(pkg_dir, "info", "[Ll][Ii][Cc][Ee][Nn][CcSs][Ee]*", "**")
+        share_pat = os.path.join(pkg_dir, "share", "[Ll][Ii][Cc][Ee][Nn][CcSs][Ee]*", "**")
+        licenses = glob.glob(info_pat, recursive=True) + glob.glob(share_pat, recursive=True)
+        licenses = [fn for fn in licenses if not os.path.isdir(fn)]
+        licenses.sort()
+        print(file=out)
+        print(f"Conda package: {m['name']}", file=out)
+        print(f"Download url: {m['url']}", file=out)
+        print(f"License: {m['license']}", file=out)
+        for i, fn in enumerate(licenses, 1):
+            if len(licenses) > 1:
+                desc = f"{i} of {len(licenses)} license files"
+            else:
+                desc = "the only license file"
+            print(f"Contents of {fn.removeprefix(pkg_dir).lstrip(os.sep)} ({desc}):", file=out)
+            with open(fn, "rb") as f:
+                raw = f.read()
+            for l in raw.decode(errors="replace").splitlines():
+                print(f"> {l.rstrip()}", file=out)
 
 
 # Get the metadata for conda and the `ocp` package.

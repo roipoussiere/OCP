@@ -1,8 +1,4 @@
 name: Releases
-# https://github.com/marketplace/actions/automatic-releases
-# https://github.com/marketplace/actions/publish-release
-# https://github.com/marketplace/actions/create-release
-# https://github.com/marketplace/actions/github-release
 
 on: 
   push:
@@ -10,24 +6,22 @@ on:
 
 jobs:
 
-  build:
+  release:
+    name: Pubish release
     runs-on: ubuntu-latest
-    # permissions:
-    #   contents: write
     steps:
 
-    # - uses: actions/checkout@v2
+    # see https://github.com/marketplace/actions/download-workflow-artifact
     - name: Download artifact
       uses: dawidd6/action-download-artifact@v2
       with:
         workflow: build_wheel.yml
         path: wheels
-        # check_artifacts: true
 
     - name: Display info
       run: ls -R wheels
 
-    # https://github.com/marketplace/actions/create-release
+    # see https://github.com/marketplace/actions/create-release
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "wheels/**/*.whl"

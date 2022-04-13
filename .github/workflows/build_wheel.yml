@@ -36,11 +36,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
 
-      - name: Print licenses
-        if: matrix.os == 'ubuntu'
-        run: |
-          grep '"license":' $CONDA/conda-meta/*.json | sed -e 's/.*\/conda-meta\/\(.*-.*\)-.*"license": "\(.*\)".*/\1: \2/'
-
       - name: Build wheel
         shell: bash -l {0}
         run: |
@@ -62,8 +57,9 @@ jobs:
           pip install 'git+https://github.com/CadQuery/cadquery' ezdxf multimethod nlopt nptyping typish
           python -c "import cadquery; cadquery.Workplane('XY').box(1,2,3).toSvg()"
 
+      # see https://github.com/marketplace/actions/upload-a-build-artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ocpvtk-${{ matrix.os }}-cp${{ matrix.python-version }}.whl
+          name: ocpvtk-${{ matrix.os }}-cp${{ matrix.python-version }}
           path: dist/*.whl
