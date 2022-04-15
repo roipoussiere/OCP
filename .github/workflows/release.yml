@@ -11,21 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    # see https://github.com/marketplace/actions/download-workflow-artifact
-    - name: Download artifact
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        workflow: build_wheel.yml
-        path: wheels
+      # see https://github.com/marketplace/actions/download-workflow-artifact
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build_wheel.yml
+          path: wheels
 
-    - name: Display info
-      run: ls -R wheels
+      - name: Display info
+        run: ls -R wheels
 
-    # see https://github.com/marketplace/actions/create-release
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "wheels/**/*.whl"
-        token: ${{ secrets.GITHUB_TOKEN }}
+      # see https://github.com/marketplace/actions/create-release
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "wheels/**/*.whl"
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # see https://github.com/marketplace/actions/pypi-publish
       - name: Publish to PyPI
