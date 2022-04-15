@@ -292,7 +292,7 @@ setup(
     url='https://github.com/roipoussiere/OCP',
     download_url="https://github.com/roipoussiere/OCP/releases",
     classifiers=[
-        "Development Status :: :: 4 - Beta",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: Apache Software License",
