@@ -16,10 +16,14 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build_wheel.yml
-          path: dist
+          path: wheels
 
       - name: List wheels
-        run: ls -R dist
+        run: |
+          mkdir dist
+          mv wheels/**/*.whl dist
+          rm -rf wheels
+          ls dist
 
       # see https://github.com/marketplace/actions/create-release
       - name: Create release

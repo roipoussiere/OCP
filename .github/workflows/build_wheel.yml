@@ -61,5 +61,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ocpvtk-${{ matrix.os }}-cp${{ matrix.python-version }}
+          name: ocp-vtk-${{ matrix.os }}-cp${{ matrix.python-version }}
           path: dist/*.whl
