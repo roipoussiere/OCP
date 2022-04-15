@@ -19,7 +19,7 @@ jobs:
           path: dist
 
       - name: List wheels
-        run: ls dist
+        run: ls -R dist
 
       # see https://github.com/marketplace/actions/create-release
       - name: Create release
