@@ -18,14 +18,20 @@ jobs:
           workflow: build_wheel.yml
           path: wheels
 
-      - name: Display info
-        run: ls -R wheels
+      # Remove this after next ocp build
+      # see https://github.com/roipoussiere/OCP/commit/e38eecd4ca5f9071c189fda0dd78893c50b3bc7c
+      - name: Move wheels
+        run: |
+          mkdir dist
+          mv wheels/**/*.whl dist
+          rm -rf wheels
+          ls dist
 
       # see https://github.com/marketplace/actions/create-release
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "wheels/**/*.whl"
+          artifacts: "dist/*.whl"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # see https://github.com/marketplace/actions/pypi-publish
@@ -34,4 +40,3 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages_dir: wheels/
