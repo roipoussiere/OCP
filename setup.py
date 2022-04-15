@@ -283,8 +283,26 @@ args = [conda, "list", "--json", "^ocp$"]
 [ocp_meta] = json.loads(subprocess.check_output(args))
 
 setup(
-    name="ocpvtk",
+    name="ocp-vtk",
     version=ocp_meta["version"],
+    description="OCP+VTK wheel with shared library dependencies bundled.",
+    long_description=open("README.md").read(),
+    long_description_content_type='text/markdown',
+    author="fp473, roipoussiere",
+    url='https://github.com/roipoussiere/OCP',
+    download_url="https://github.com/roipoussiere/OCP/releases",
+    classifiers=[
+        "Development Status :: :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: POSIX",
+        "Operating System :: MacOS",
+        "Operating System :: Unix",
+        "Programming Language :: Python",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Scientific/Engineering"
+    ],
     # Dummy extension to trigger build_ext
     ext_modules=[Extension("__dummy__", sources=[])],
     cmdclass={"bdist_wheel": bdist_wheel_repaired, "build_ext": copy_installed},

@@ -16,16 +16,10 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build_wheel.yml
-          path: wheels
+          path: dist
 
-      # Remove this after next ocp build
-      # see https://github.com/roipoussiere/OCP/commit/e38eecd4ca5f9071c189fda0dd78893c50b3bc7c
-      - name: Move wheels
-        run: |
-          mkdir dist
-          mv wheels/**/*.whl dist
-          rm -rf wheels
-          ls dist
+      - name: List wheels
+        run: ls dist
 
       # see https://github.com/marketplace/actions/create-release
       - name: Create release
