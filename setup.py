@@ -239,12 +239,10 @@ def write_licenses(prefix, whl, always_pkgs, added_files, out):
         # auditwheel and delvewheel rename bundled libraries to avoid
         # clashes.  We undo this renaming in order to match to file
         # lists in conda.
-        m = re.match("^([^.]+)-[0-9A-Fa-f]{4,}([.].+)$", n)
-        if m:
-            u = m.group(1) + m.group(2)
-            if u in name_to_pkgs:
-                bundled_pkgs.update(name_to_pkgs[u])
-                continue
+        u = try_unmangle(n)
+        if u and u in name_to_pkgs:
+            bundled_pkgs.update(name_to_pkgs[u])
+            continue
         not_found.append(fn)
     print(f"{not_found=}")
     bundled_pkgs = sorted(bundled_pkgs)
@@ -267,11 +265,22 @@ def write_licenses(prefix, whl, always_pkgs, added_files, out):
                 desc = f"{i} of {len(licenses)} license files"
             else:
                 desc = "the only license file"
-            print(f"Contents of {fn.replace(pkg_dir, '', 1).lstrip(os.sep)} ({desc}):", file=out)
+            print(f"Contents of {os.path.relpath(fn, pkg_dir)} ({desc}):", file=out)
             with open(fn, "rb") as f:
                 raw = f.read()
             for l in raw.decode(errors="replace").splitlines():
                 print(f"> {l.rstrip()}", file=out)
+
+
+def try_unmangle(n):
+    # delvewheel mangling example: "vtkCommonColor-9.0.dll" => "vtkCommonColor-9.0-87ee4902.dll"
+    m = re.match("^(.+)-[0-9A-Fa-f]{8,}([.]dll)$", n)
+    if m:
+        return m.group(1) + m.group(2)
+    # auditwheel mangling example: "libvtkCommonColor-9.0.so.9.0.1" => "libvtkCommonColor-9-9810eeb7.0.so.9.0.1"
+    m = re.match("^([^.]+)-[0-9A-Fa-f]{8,}([.].+)$", n)
+    if m:
+        return m.group(1) + m.group(2)
 
 
 # Get the metadata for conda and the `ocp` package.
